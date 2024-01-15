@@ -12,8 +12,8 @@ describe('Standard User e2e testing!', () => {
   beforeEach('Login with Standard user',()=>{
     LoginPage.performLogin('standard_user')
     InventoryPage.checkIfItsInventoryPage()
-    cy.get('.app_logo').should('have.text','Swag Labs')
-    cy.get('.title').should('have.text','Products')
+    cy.getElementByClass('app_logo').should('have.text','Swag Labs')
+    cy.getElementByClass('title').should('have.text','Products')
   })
 
   context('TC-1 Testing adding items to the chart ',()=>{
@@ -55,7 +55,7 @@ describe('Standard User e2e testing!', () => {
   })
 
   context('TC-2 Testing adding items to the chart and then checkout',()=>{
-    it.only('TC-2.1 Adding 1 item and then check out',()=>{
+    it.('TC-2.1 Adding 1 item and then check out',()=>{
       InventoryPage.addItemToTheCart('Sauce Labs Backpack') 
       cy.getElementByClass('shopping_cart_badge').should('have.text','1')
       cy.getElementByClass('shopping_cart_link').click()
@@ -89,11 +89,22 @@ describe('Standard User e2e testing!', () => {
       CheckoutCompletePage.getBackToHomePageBtn.click()
       InventoryPage.checkIfItsInventoryPage()
     })
+    it('TC-2.2 Adding more than 1 item and then checkout',()=>{
+      InventoryPage.addAllElementsToCart()
+      cy.getElementByClass('shopping_cart_link').click()
+      CartPage.checkIfItsCartPage()
+
+      var Items = ['Sauce Labs Backpack','Sauce Labs Bike Light','Sauce Labs Bolt T-Shirt','Sauce Labs Fleece Jacket','Sauce Labs Onesie','test.allthethings()-t-shirt-(red)']
+      this.Items.forEach((item)=>{
+        CartPage.checkItemExistInPage(item)
+      })
+      CartPage.getCheckoutBtn.click()
+    })
   })
 
   afterEach('Logout of the account',()=>{
     cy.Logout()
     LoginPage.checkIfInLoginPage()
   })
-  
+
 })
