@@ -20,7 +20,7 @@ class Cart{
     }
 
     removeAllElementsFromCart(){
-        //var Items= ['Sauce Labs Backpack','Sauce Labs Bike Light','Sauce Labs Bolt T-Shirt','Sauce Labs Fleece Jacket','Sauce Labs Onesie','test.allthethings()-t-shirt-(red)']
+        //var Items= ['Sauce Labs Backpack','Sauce Labs Bike Light','Sauce Labs Bolt T-Shirt','Sauce Labs Fleece Jacket','Sauce Labs Onesie','Test.allTheThings() T-Shirt (Red)']
         var i = 5
         this.Items.forEach((item)=>{
         this.removeItemFromTheCart(item) 

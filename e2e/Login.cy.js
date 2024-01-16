@@ -7,6 +7,7 @@ import InventoryPage from "../POMs/InventoryPage"
  */
 describe('TC-1 Login', () => {
   it('TC-1.1 Try to click with user not entered', () => {
+    LoginPage.visitLoginPage()
     LoginPage.performLogin('')
     InventoryPage.checkIfItsInventoryPage()
     LoginPage.getErrorHeader.invoke('text').should('eq','Epic sadface: Username is required')
@@ -16,7 +17,7 @@ describe('TC-1 Login', () => {
   })
   it.only('TC-1.2 Login with standard user', () => {
     var users = ['standard_user','problem_user','performance_glitch_user','error_user','visual_user']
-    console.log(users);
+    LoginPage.visitLoginPage()
     for(var user of users){
       LoginPage.performLogin(user)
       InventoryPage.checkIfItsInventoryPage()

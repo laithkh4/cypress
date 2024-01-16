@@ -3,14 +3,13 @@
   * log in to user using a username because all the users have the same password for this page!
   */
  Cypress.Commands.add('login', (username) => { 
-    //cy.intercept({url:'https://www.saucedemo.com'}).as('LoginRequest')
-    cy.visit('https://www.saucedemo.com')//,{ timeout: 120000 })
+
     if(username != null && username !=''){
         LoginPage.getUserNameInputElement.type(`${username}`)
         LoginPage.getPasswordInputElement.type('secret_sauce')
     }
     cy.getElement('login-button').click()
-   // cy.wait('@LoginRequest')
+
   })
 /**
  * get element depend on the data test property
@@ -43,3 +42,10 @@ Cypress.Commands.add('getElementByClass', (className)=>{
     cy.get('.'+className).should('exist')
 })
 
+
+Cypress.Commands.add('appliToolsScreenShot', (Tag)=>{// we can edit this to more include the other options if needed 
+    cy.eyesCheckWindow({
+        tag: Tag,
+        fully: true
+       });
+})

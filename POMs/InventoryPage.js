@@ -31,7 +31,7 @@ class Inventory{
 
     removeAllElementsFromCart(){
         //var Items= ['Sauce Labs Backpack','Sauce Labs Bike Light','Sauce Labs Bolt T-Shirt','Sauce Labs Fleece Jacket','Sauce Labs Onesie','test.allthethings()-t-shirt-(red)']
-        var i = 5
+        var i = this.Items.length-1
         this.Items.forEach((item)=>{
         this.removeItemFromTheCart(item) 
         if(i>1){

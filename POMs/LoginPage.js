@@ -15,6 +15,9 @@ class Login{
     get getErrorHeader(){
         return cy.getElement('error')
     }
+    visitLoginPage(){
+        cy.visit('https://www.saucedemo.com')
+    }
     performLogin(username){
         cy.login(username)
     }
