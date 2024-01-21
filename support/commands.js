@@ -1,4 +1,5 @@
  import LoginPage from "../POMs/LoginPage"
+ import "@cypress-audit/lighthouse/commands";
  /**
   * log in to user using a username because all the users have the same password for this page!
   */

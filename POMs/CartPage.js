@@ -9,6 +9,9 @@ class Cart{
         return cy.getElement('checkout')
     }
 
+    get getShopeCartBadge(){
+        return cy.getElementByClass('shopping_cart_badge')
+    }    
     checkIfItsCartPage(){
         cy.location('pathname').should('eq', '/cart.html')
     }

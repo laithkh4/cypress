@@ -19,78 +19,131 @@ import CheckoutCompletePage from "../POMs/CheckoutCompletePage"
  * page I will take easier approch assuming it will be static, but it can be changed 
  * to adapt the dynamic data if data sources  mimiced . 
  */
-
-describe('Standard User e2e testing!', () => {
-  before('Start The Applitools Ai Visiual Testing',()=>{
-    cy.eyesOpen({
+var users = ['standard_user']//, 'problem_user', 'performance_glitch_user', 'error_user', 'visual_user']
+users.forEach((username)=>{
+//var username='standard_user';
+describe('e2e testing!', () => {
+  before('Start The Applitools Ai Visiual Testing', ()=>{
+    cy.log('Currently we are testing username: ' + username)
+   /* cy.eyesOpen({
       appName:'Testing Sacue Page',
-      apiKey: 'InTNBdR10426DLHbF9ZPkX0E104LIbm0756AVlRrPYvo8KM110',
-    })
+      apiKey: 'WVrkXT4LykmZ1110ZGnvvH4qQu12S36W97wh016WsAAEwY110',
+    })*/
   })
-  beforeEach('Login with Standard user',()=>{
+  beforeEach('Login',()=>{
     LoginPage.visitLoginPage()
-    cy.appliToolsScreenShot("Login page")
-    LoginPage.performLogin('standard_user')
+    cy.window().then((win) => {
+      if ('serviceWorker' in win.navigator) {
+        win.navigator.serviceWorker.getRegistrations().then((registrations) => {
+          registrations.forEach((registration) => {
+            registration.unregister();
+          });
+        });
+      } else {
+        // Handle the case where serviceWorker is not supported
+        cy.log('Service Worker is not supported in this browser');
+      }
+    });
+    //cy.appliToolsScreenShot("Login page")
+    LoginPage.performLogin(username)
+    cy.window().then((win) => {
+      if ('serviceWorker' in win.navigator) {
+        win.navigator.serviceWorker.getRegistrations().then((registrations) => {
+          registrations.forEach((registration) => {
+            registration.unregister();
+          });
+        });
+      } else {
+        // Handle the case where serviceWorker is not supported
+        cy.log('Service Worker is not supported in this browser');
+      }
+    });
+    cy.lighthouse(
+      {
+        performance:70,
+        accessibility:90,
+        "best-practices":70,
+        seo:70,
+      },
+      {
+        formFactor: "desktop",
+        screenEmulation:{
+        mobile: false,
+        dsiable: false,
+        //width: Cypress.config("viewportWidth"),
+        //height: Cypress.config("viewportHeight"),
+        deviceScaleRatio: 1,
+        },
+        throttling: {
+            rttMs: 40,
+            throughputKbps: 11024,
+            cpuSlowdownMultiplier: 0,
+            requestLatencyMs: 0,
+            downloadThroughputKbps: 0,
+            uploadThroughputKbps: 0,
+          },
+      }
+      )
     InventoryPage.checkIfItsInventoryPage()
-    cy.appliToolsScreenShot("|Inventory page")
+    //cy.appliToolsScreenShot("|Inventory page")
     cy.getCookie('session-username').then((cookie)=>{
-      if (cookie){
+      if (cookie) {
         var value = cookie.value
-        expect(value).eq('standard_user')
+        expect(value).eq(username) 
       }
     })
-    cy.getElementByClass('app_logo').should('have.text','Swag Labs')
-    cy.getElementByClass('title').should('have.text','Products')
+   InventoryPage.getAppLogo.should('have.text', 'Swag Labs')
+    InventoryPage.getTitle.should('have.text', 'Products')
   })
 
-  context('TC-1 Testing adding items to the chart ',()=>{
+  context('TC-1 Testing adding items to the chart ', ()=>{
 
-    it('TC-1.1 Adding 1 item and removing to it from the same page',()=> {
+    it.only('TC-1.1 Adding 1 item and removing to it from the same page', ()=> {
       InventoryPage.addItemToTheCart('Sauce Labs Backpack') 
-      cy.appliToolsScreenShot("After adding 1 item")
-      cy.getElementByClass('shopping_cart_badge').should('have.text','1')
+      //cy.appliToolsScreenShot("After adding 1 item")
+      InventoryPage.getShopeCartBadge.should('have.text', '1')
       InventoryPage.removeItemFromTheCart('Sauce Labs Backpack')
       cy.get('.shopping_cart_badge').should('not.exist')
-      cy.appliToolsScreenShot("|Inventory page")
+      //cy.appliToolsScreenShot("|Inventory page")
 
     })
 
-    it('TC-1.2 Adding different items and removing to it from the same page',()=> {
+    it('TC-1.2 Adding different items and removing to it from the same page', ()=> {
       InventoryPage.addAllElementsToCart()
-      cy.appliToolsScreenShot("After adding all items")
+      //cy.appliToolsScreenShot("After adding all items")
       InventoryPage.removeAllElementsFromCart()
-      cy.appliToolsScreenShot("|Inventory page")
+      //cy.appliToolsScreenShot("|Inventory page")
     })
 
-    it('TC-1.3 Adding 1 item then continue and then adding another item and removing them from the cart page ',()=> {
+    it('TC-1.3 Adding 1 item then continue and then adding another item and removing them from the cart page ', ()=> {
       InventoryPage.addItemToTheCart('Sauce Labs Backpack') 
-      cy.getElementByClass('shopping_cart_badge').should('have.text','1')
-      cy.appliToolsScreenShot("After adding 1 item")
+      InventoryPage.getShopeCartBadge.should('have.text', '1')
+      //cy.appliToolsScreenShot("After adding 1 item")
       cy.getElementByClass('shopping_cart_link').click()
-      cy.getElementByClass('shopping_cart_badge').should('have.text','1')
-      cy.appliToolsScreenShot("After adding 1 item in cart page")
+      CartPage.getShopeCartBadge.should('have.text', '1')
+      //cy.appliToolsScreenShot("After adding 1 item in cart page")
       CartPage.getContinueBtn.click()
       InventoryPage.addItemToTheCart('Sauce Labs Bike Light') 
-      cy.getElementByClass('shopping_cart_badge').should('have.text','2')
-      cy.appliToolsScreenShot("After adding 2 item")
+      InventoryPage.getShopeCartBadge.should('have.text','2')
+      //cy.appliToolsScreenShot("After adding 2 item")
       cy.getElementByClass('shopping_cart_link').click()
-      cy.getElementByClass('shopping_cart_badge').should('have.text','2')
-      cy.appliToolsScreenShot("After adding 2 items in cart page")
+      CartPage.getShopeCartBadge.should('have.text','2')
+      //cy.appliToolsScreenShot("After adding 2 items in cart page")
       CartPage.removeItemFromTheCart('Sauce Labs Backpack')
-      cy.getElementByClass('shopping_cart_badge').should('have.text','1')
+      CartPage.getShopeCartBadge.should('have.text','1')
       CartPage.removeItemFromTheCart('Sauce Labs Bike Light')
-      cy.appliToolsScreenShot("Cart page")
+      //cy.appliToolsScreenShot("Cart page")
 
       cy.get('.shopping_cart_badge').should('not.exist')// we could make this a custom command 
     })
 
     it('TC-1.4 Adding different items and removing to it from the cart page',()=> {
       InventoryPage.addAllElementsToCart()
-      cy.appliToolsScreenShot("After adding all items")
+      //cy.appliToolsScreenShot("After adding all items")
       InventoryPage.getTheCartBtn.click()
-      cy.appliToolsScreenShot("After adding all items from cart page")
+      //cy.appliToolsScreenShot("After adding all items from cart page")
       InventoryPage.removeAllElementsFromCart()
-      cy.appliToolsScreenShot("Cart Page")
+      //cy.appliToolsScreenShot("Cart Page")
     })
   
   })
@@ -98,11 +151,11 @@ describe('Standard User e2e testing!', () => {
   context('TC-2 Testing adding items to the chart and then checkout',()=>{
     it('TC-2.1 Adding 1 item and then check out',()=>{
       InventoryPage.addItemToTheCart('Sauce Labs Backpack') 
-      cy.getElementByClass('shopping_cart_badge').should('have.text','1')
-      cy.appliToolsScreenShot("After adding 1 item")
+      InventoryPage.getShopeCartBadge.should('have.text','1')
+      //cy.appliToolsScreenShot("After adding 1 item")
       cy.getElementByClass('shopping_cart_link').click()
       CartPage.checkIfItsCartPage()
-      cy.appliToolsScreenShot("After adding 1 item in Cart Page")
+      //cy.appliToolsScreenShot("After adding 1 item in Cart Page")
       /**
        * next 2 command are not needed because of the applitools AI visual testing used before
        * 
@@ -110,7 +163,7 @@ describe('Standard User e2e testing!', () => {
       cy.getElementByClass('inventory_item_price').should('have.text','$29.99')// am not sure that this okay because the price is not fixed and its might change frequently
       CartPage.checkItemExistInPage('Sauce Labs Backpack')
       CartPage.getCheckoutBtn.click()
-      cy.appliToolsScreenShot("Checkout Page before typing")
+      //cy.appliToolsScreenShot("Checkout Page before typing")
       /**
        * We can make each of these block into a function to further decrease the number of line per tc
        * but keeping them like this make it easier to understand the tc behavior in my POV
@@ -121,7 +174,7 @@ describe('Standard User e2e testing!', () => {
       CheckoutStepOnePage.getPostalCodeInputField.type('P521')
       CheckoutStepOnePage.getContinueBtn.click()
 
-      cy.appliToolsScreenShot("Step Two Checkout page ")
+      //cy.appliToolsScreenShot("Step Two Checkout page ")
       CheckoutStepTwoPage.checkIfItsCheckStepTwoPage()
       CheckoutStepTwoPage.checkItemExistInPage('Sauce Labs Backpack')
       CheckoutStepTwoPage.checkItemExistInPage('$29.99')
@@ -132,30 +185,30 @@ describe('Standard User e2e testing!', () => {
       CheckoutStepTwoPage.checkItemExistInPage('Tax')
       CheckoutStepTwoPage.checkItemExistInPage('Total')
       CheckoutStepTwoPage.getTheFinishBtn.click()
-      cy.appliToolsScreenShot("Checkout complete page")// the next steps can be removed because we are using the visual testing for that 
+      //cy.appliToolsScreenShot("Checkout complete page")// the next steps can be removed because we are using the visual testing for that 
       CheckoutCompletePage.checkIfItsCheckoutCompletePage()
       CheckoutCompletePage.getTitile.should('have.text','Checkout: Complete!')
       CheckoutCompletePage.getCompleteHeader.should('have.text','Thank you for your order!')
       CheckoutCompletePage.getCompleteText.should('have.text', 'Your order has been dispatched, and will arrive just as fast as the pony can get there!')
       CheckoutCompletePage.getBackToHomePageBtn.click()
       InventoryPage.checkIfItsInventoryPage()
-      cy.appliToolsScreenShot("|Inventory page")
+      //cy.appliToolsScreenShot("|Inventory page")
 
     })
 
     it('TC-2.2 Adding more than 1 item and then checkout',()=>{
       InventoryPage.addAllElementsToCart()
-      cy.appliToolsScreenShot("After adding all items")
+      //cy.appliToolsScreenShot("After adding all items")
       cy.getElementByClass('shopping_cart_link').click()
       CartPage.checkIfItsCartPage()
-      cy.appliToolsScreenShot("After adding all items in cart page")
+      //cy.appliToolsScreenShot("After adding all items in cart page")
       var Items = ['Sauce Labs Backpack','Sauce Labs Bike Light','Sauce Labs Bolt T-Shirt','Sauce Labs Fleece Jacket','Sauce Labs Onesie','Test.allTheThings() T-Shirt (Red)']
       Items.forEach((item)=>{
         CartPage.checkItemExistInPage(item)
       })
       CartPage.getCheckoutBtn.click()
       CheckoutStepOnePage.checkIfItsCheckStepOnePage()
-      cy.appliToolsScreenShot("Checkout step one  page")
+      //cy.appliToolsScreenShot("Checkout step one  page")
       CheckoutStepOnePage.getFirstNameInputField.type('Laith')
       CheckoutStepOnePage.getLastNameInputField.type('Abu-khaizaran')
       CheckoutStepOnePage.getPostalCodeInputField.type('P521')
@@ -164,7 +217,7 @@ describe('Standard User e2e testing!', () => {
       Items.forEach((item)=>{
         CartPage.checkItemExistInPage(item)
       })
-      cy.appliToolsScreenShot("Checkout step two  page")
+      //cy.appliToolsScreenShot("Checkout step two  page")
       CheckoutStepTwoPage.checkIfItsCheckStepTwoPage()
       CheckoutStepTwoPage.checkItemExistInPage('Sauce Labs Backpack')
       CheckoutStepTwoPage.checkItemExistInPage('Payment Information')
@@ -175,13 +228,13 @@ describe('Standard User e2e testing!', () => {
       CheckoutStepTwoPage.checkItemExistInPage('Total')
       CheckoutStepTwoPage.getTheFinishBtn.click()
       CheckoutCompletePage.checkIfItsCheckoutCompletePage()
-      cy.appliToolsScreenShot("Checkout complete page")
+      //cy.appliToolsScreenShot("Checkout complete page")
       CheckoutCompletePage.getTitile.should('have.text','Checkout: Complete!')
       CheckoutCompletePage.getCompleteHeader.should('have.text','Thank you for your order!')
       CheckoutCompletePage.getCompleteText.should('have.text', 'Your order has been dispatched, and will arrive just as fast as the pony can get there!')
       CheckoutCompletePage.getBackToHomePageBtn.click()
       InventoryPage.checkIfItsInventoryPage()
-      cy.appliToolsScreenShot("|Inventory page")
+      //cy.appliToolsScreenShot("|Inventory page")
     })
   })
 
@@ -191,35 +244,102 @@ describe('Standard User e2e testing!', () => {
       cy.reload()
       LoginPage.checkIfInLoginPage()
       cy.contains(`Epic sadface: You can only access '/inventory.html' when you are logged in.`)
-      cy.appliToolsScreenShot("Login page with error shown")
+      //cy.appliToolsScreenShot("Login page with error shown")
       cy.checkError()
     })  
 
     it('TC-3.2 Testing adding item and then logout and login then see if it still in cart',()=>{
       InventoryPage.addItemToTheCart('Sauce Labs Backpack') 
-      cy.getElementByClass('shopping_cart_badge').should('have.text','1')
+      InventoryPage.getShopeCartBadge.should('have.text','1')
       cy.clearCookie('session-username')
       cy.reload()
       LoginPage.checkIfInLoginPage()
       cy.contains(`Epic sadface: You can only access '/inventory.html' when you are logged in.`)
-      cy.appliToolsScreenShot("Login page with error shown")
+      //cy.appliToolsScreenShot("Login page with error shown")
       cy.checkError()
-      LoginPage.performLogin('standard_user')
-      cy.getElementByClass('shopping_cart_badge').should('have.text','1')
-      cy.appliToolsScreenShot("Inventory page with 1 item in cart")
+      LoginPage.performLogin(username)
+      InventoryPage.getShopeCartBadge.should('have.text','1')
+      //cy.appliToolsScreenShot("Inventory page with 1 item in cart")
     }) 
+  })
+
+  context('TC-4 Testing changing the order of the items',()=>{
+
+    it('TC-4.1 Choosing the A-Z ordering',()=>{
+      InventoryPage.getSortingSelector.select('Name (A to Z)')
+      //cy.appliToolsScreenShot("Ordering from A-Z")
+    })
+
+    it('TC-4.2 Choosing the Z-A ordering',()=>{
+      InventoryPage.getSortingSelector.select('Name (Z to A)')//this can be done also using the value :cy.getElement('product_sort_container').select('az')
+      //cy.appliToolsScreenShot("Ordering from Z-A")
+    })
+
+    it('TC-4.3 Choosing the Z-A ordering',()=>{
+      InventoryPage.getSortingSelector.select('Price (low to high)')//this can be done also using the value :cy.getElement('product_sort_container').select('az')
+      //cy.appliToolsScreenShot("Ordering from low to high price")
+    })
+
+    it('TC-4.4 Choosing the Z-A ordering',()=>{
+      InventoryPage.getSortingSelector.select('Price (high to low)')//this can be done also using the value :cy.getElement('product_sort_container').select('az')
+      //cy.appliToolsScreenShot("Ordering from high to low price")
+    })
+  })
+
+  context('TC-5 Testing clicking on each item ',()=>{
+    it('TC-5.1 Clicking on each item back at home page',()=>{
+      var Items = ['Sauce Labs Backpack','Sauce Labs Bike Light','Sauce Labs Bolt T-Shirt','Sauce Labs Fleece Jacket','Sauce Labs Onesie','Test.allTheThings() T-Shirt (Red)']
+      Items.forEach((item)=>{
+        InventoryPage.getItemLinkeBasedOnName(item).click()
+        InventoryPage.getItemLinkeBasedOnName(item).should('have.text',item)
+        //cy.appliToolsScreenShot("Item: " + item + " Page" )
+        var ItemName = item.toLowerCase().replaceAll(' ', '-')
+        cy.getElement('add-to-cart-'+ItemName).click()
+        InventoryPage.getShopeCartBadge.should('have.text','1')
+        cy.getElement('remove-'+ItemName).click()
+        cy.getElement('back-to-products').click()
+      })
+
+    })
+  })
+  context('TC-6 Testing the social media buttons',()=>{
+
+    it('TC-6.1 Clicking on the twitter button',()=>{
+      cy.contains('Twitter').invoke('attr','href').then((ref)=>{
+        expect(ref).eq('https://twitter.com/saucelabs')
+      })
+    })
+
+    it('TC-6.2 Clicking on the Facebook button',()=>{
+      cy.contains('Facebook').invoke('attr','href').then((ref)=>{
+        expect(ref).eq('https://www.facebook.com/saucelabs')
+      })
+    })
+
+    it('TC-6.3 Clicking on the LinkedIn button',()=>{
+      cy.contains('LinkedIn').invoke('attr','href').then((ref)=>{
+        expect(ref).eq('https://www.linkedin.com/company/sauce-labs/')
+      })
+    })
+
   })
 
   afterEach('Logout of the account',()=>{
     cy.getCookie('session-username').then((cookie)=>{
       if (cookie){
         cy.Logout()
-        LoginPage.checkIfInLoginPage()
+       // LoginPage.checkIfInLoginPage()
       }
+      //cy.clearCookies()
+      //cy.clearLocalStorage()
+      cy.clearAllSessionStorage
+      cy.clearAllCookies
     })
   })
   after('After all test ran',()=>{
-    cy.eyesClose()
+  // cy.eyesClose()
   })
 
-})
+})//end of describe 
+
+})//end of for each

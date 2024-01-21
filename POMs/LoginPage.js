@@ -15,8 +15,13 @@ class Login{
     get getErrorHeader(){
         return cy.getElement('error')
     }
+
     visitLoginPage(){
-        cy.visit('https://www.saucedemo.com')
+        cy.visit('https://www.saucedemo.com', {
+            onBeforeLoad(win) {
+              delete win.navigator.__proto__.serviceWorker;
+            },
+          })
     }
     performLogin(username){
         cy.login(username)
